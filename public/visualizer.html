@@ -1,12 +1,32 @@
 <!DOCTYPE html>
 <html>
+  <head></head>
+  <body>
+    <span id="status">
+    </span>
+    <pre id="content"></pre>
+  </body>
+  <script>
+    const [_, org, repo] = window.location.pathname.split('/')
+    let status = "loading"
+    let content = ""
+    const pullData = async () => {
+      try {
+        await fetch(`/api/${org}/${repo}`).then(resp => resp.json()).then(data => {
+          status = data.status
+          content = data.content
+        })
+      } catch (e) {
+        console.error(e)
+      } finally {
+        document.getElementById('status').innerText = status
+        document.getElementById('content').innerText = content
+        if (status == 'loading') {
+          setTimeout(pullData, 1000)
+        }
+      }
+    }
 
-<head></head>
-
-<body>
-</body>
-<script>
-
-</script>
-
+    pullData()
+  </script>
 </html>

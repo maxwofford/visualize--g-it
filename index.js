@@ -6,10 +6,26 @@ app.use(express.static('public'))
 const clone = require('./clone.js')
 app.get('/:org/:repo', async (req, res) => {
   const { org, repo } = req.params
-  res.redirect(`visualizer.html?org=${org}&repo=${repo}`)
-  // ^ send the user on their merry way before doing the heavy work...
 
-  await clone(org, repo)
+  new Promise(resolve => {
+    setTimeout(() => {clone(org, repo)}, 1000)
+  })
+
+  res.sendFile(__dirname + '/public/visualizer.html')
+  // ^ send the user on their merry way before doing the heavy work...
+})
+
+const shell = require('shelljs')
+app.get('/api/:org/:repo', async (req, res) => {
+  const result = {}
+  result.status = 'loading'
+  const { org, repo } = req.params
+  const cat = shell.cat(`./commit-logs/${org}/${repo}/log.txt`)
+  if (cat.code == 0) {
+    result.status = 'done'
+    result.content = cat
+  }
+  res.json(result)
 })
 
 app.listen(3000)
