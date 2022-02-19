@@ -1,3 +1,4 @@
 repos/
 commit-logs/
+node_modules/
 !.keep
