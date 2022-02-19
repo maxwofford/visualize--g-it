@@ -28,4 +28,17 @@ app.get('/api/:org/:repo', async (req, res) => {
   res.json(result)
 })
 
+const { deleteAll } = require('./delete.js')
+app.delete('/api/:org/:repo', async (req, res) => {
+  const { org, repo } = req.params
+  await deleteRepo(org, repo)
+  res.json({ ok: true })
+})
+app.delete('/api/delete-all', async (req, res) => {
+  await deleteAll()
+  res.json({ ok: true })
+})
+deleteAll()
+
+
 app.listen(3000)
